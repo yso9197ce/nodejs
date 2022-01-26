@@ -5,6 +5,8 @@
   "main": "index.js",
   "s-type": "module",
   "scripts": {
+    "start": "SET ENV_VAR=production && node index.js",
+    "dev": "SET ENV_VAR=develop && nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -12,6 +14,8 @@
   "license": "ISC",
   "dependencies": {
     "dotenv": "^14.3.0",
+    "ejs": "^3.1.6",
+    "express": "^4.17.2",
     "pm2": "^5.1.2"
   }
 }
