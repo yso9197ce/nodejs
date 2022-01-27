@@ -1,0 +1,27 @@
+<%- include('parts/header') %>
+<%- include('parts/navbar') %>
+
+<div class="container">
+    <form method="post">
+        <div class="mb-3">
+          <label for="" class="form-label">Email address</label>
+          <input type="text" class="form-control" name="email" >
+          <div id="emailHelp" class="form-text"></div>
+          <% if(locals.email){ %>
+            <div><%= email %></div>
+          <% } %>
+        </div>
+        <div class="mb-3">
+          <label for="" class="form-label">Password</label>
+          <input type="password" class="form-control" name="password">
+          <% if(locals.email){ %>
+            <div><%= password %></div>
+          <% } %>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+</div>
+
+<%- include('parts/scripts') %>
+<%- include('parts/footer') %>

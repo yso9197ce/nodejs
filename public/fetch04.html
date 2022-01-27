@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+<form name="form1" onsubmit="sendData(); return false;">
+    <input type="text" name="name" placeholder="名字"><br>
+    <input type="number" name="age" placeholder="年齡" value="22"><br>
+    <select name="gender">
+        <option value="female">女</option>
+        <option value="male">男</option>
+        <option value="un">未決定</option>
+    </select>
+    <button>send</button>
+</form>
+
+
+<script>
+    function sendData(){
+        fetch('/trypost', {
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: new URLSearchParams(new FormData(document.form1)).toString()
+        }).then(r=>r.json())
+        .then(obj=>{
+            console.log(obj);
+        })
+    }
+
+</script>
+</body>
+</html>

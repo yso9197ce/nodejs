@@ -1,0 +1,50 @@
+<%- include('parts/header') %>
+<%- include('parts/navbar') %>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <form>
+                <div class="mb-3">
+                  <label for="orderByCol" class="form-label">欄位</label>
+                  <select class="form-select" id="orderByCol" name="orderByCol">
+                    <option value="name" <%= queryCol == 'name' ? 'selected': '' %>>name</option>
+                    <option value="age" <%= queryCol == 'age' ? 'selected': '' %>>age</option>
+                    <option value="id" <%= queryCol == 'id' ? 'selected': '' %>>id</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="orderByRule" class="form-label">規則</label>
+                  <select class="form-select" id="orderByRule" name="orderByRule">
+                    <option value="asc" <%= queryRule == 'asc' ? 'selected': '' %>>由小到大</option>
+                    <option value="desc" <%= queryRule == 'desc' ? 'selected': '' %>>由大到小</option>
+                  </select>
+                </div>
+                                
+                <button type="submit" class="btn btn-primary">送出</button>
+              </form>
+        </div>
+    </div>
+
+    <table class="table table-striped">
+        <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Age</th>
+      </tr>
+    </thead>
+    <tbody>
+        <% for(let i of data){ %>
+            <tr>
+                <td><%= i.id %></td>
+                <td><%= i.name %></td>
+                <td><%= i.age %></td>
+            </tr>
+        <% } %>
+    </tbody>
+    </table>
+</div>
+
+<%- include('parts/scripts') %>
+<%- include('parts/footer') %>
