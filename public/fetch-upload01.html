@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="./../fontawesome/css/all.css">
+    <title>上傳多個圖檔</title>
+    <style>
+        .img-unit {
+            position: relative;
+            display: inline-block;
+        }
+        .img-unit > img {
+            width: 200px;
+        }
+        .img-unit > .del-div {
+            position: absolute;
+            right: 0;
+            top: 0;
+            cursor: pointer;
+        }
+
+    </style>
+</head>
+<body>
+
+<form name="form1" onsubmit="return false;" style="display: none">
+ <input id="sel_file" type="file" name="photos" multiple accept="image/*">
+
+</form>
+
+
+<textarea id="data" readonly></textarea>
+<br>
+<button onclick="sel_file.click()">上傳</button>
+<br>
+<div id="imgs">
+
+</div>
+
+<script>
+    const sel_file = document.querySelector('#sel_file');
+    const imgsDiv = document.querySelector('#imgs');
+    let imgData = [];
+
+    function imgUnitTpl(file){
+        console.log(file);
+        return `<div class="img-unit" data-file="${file}">
+            <img src="img/${file}" alt="">
+            <div class="del-div">
+                <i class="fas fa-times-circle del-icon"></i>
+            </div>
+        </div>`;
+    }
+
+    function renderImgs(){
+        imgsDiv.innerHTML = ''; // 清空
+        for(let i of imgData){
+            imgsDiv.innerHTML += imgUnitTpl(i.filename);
+        }
+    }
+
+    imgsDiv.addEventListener('click', function(event){
+        const t = event.target;
+
+        if(t.classList.contains('del-icon')){
+            const filename = t.closest('.img-unit').getAttribute('data-file');
+
+            imgData = imgData.filter(el => {
+                return el.filename !== filename;
+            });
+            renderImgs();
+            // let loc = imgData.indexOf(filename);
+            // if(loc!==-1){
+            //     imgData.splice(loc, 1);
+            //     renderImgs();
+            // }
+        }
+    });
+
+    sel_file.addEventListener('change', doUpload);
+
+    function doUpload(){
+        const fd = new FormData(document.form1);
+
+        fetch('/try-uploads', {
+            method: 'POST',
+            body: fd
+        }).then(r=>r.json()).then(obj=>{
+            imgData.push(...obj);
+            renderImgs();
+        });
+    }
+    /*
+[
+    {
+        "mimetype": "image/jpeg",
+        "filename": "97f5bfb5-5db2-4714-8e0e-9072adc51ed6.jpg",
+        "size": 42778
+    },
+    {
+        "mimetype": "image/jpeg",
+        "filename": "6c0e403d-cd54-4822-af0a-953b1e06aa3f.jpg",
+        "size": 50719
+    }
+]
+    */
+</script>
+</body>
+</html>

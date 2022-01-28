@@ -5,7 +5,8 @@ require('dotenv').config();
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs').promises;
-const upload = multer({dest: 'tmp-uploads/'});
+//const upload = multer({dest: 'tmp-uploads/'});
+const upload = require(__dirname + '/modules/upload-imgs');
 const app = express();
 const port = process.env.PORT || 3001;
 
@@ -64,9 +65,23 @@ app.post('/try-upload', upload.single('avatar'), async(req, res) => {
 
     if(file && file.originalname && whiteType.includes(file.mimetype)){
         await fs.rename(file.path, __dirname + '/public/img/' + file.originalname);
-        return res.redirect('/img/' + file.originalname);
+        return res.redirect('/img/' + file.originalname);  //res回傳類只能一種，要停下callback就要用return，不要讓他執行後面的
     }
     res.send("bad");
+})
+
+app.post('/try-uploads', upload.array('photos'), async(req, res) => {
+    //只取特定不重要的資料屬性給頁面看
+    const result = req.files.map(({filename, mimetype, size}) => {return {filename, mimetype, size}});
+
+    // const result = req.files.map(ele => {
+    //     return {
+    //         'fieldname': ele.fieldname,
+    //         'mimetype': ele.mimetype,
+    //         'size': ele.size
+    //     }
+    // });
+    res.json(result);
 })
 
 //錯誤頁面要放在所有router最後面
