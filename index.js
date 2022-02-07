@@ -22,6 +22,13 @@ app.use(express.json());
 //靜態檔目錄要放router最前面
 app.use(express.static('public'));
 
+//設定全站都會用到的middleware
+//req, res全站看到的都一樣
+app.use((req, res, next) => {
+    res.locals.milesID = "top";
+    next();
+})
+
 app.get('/', (req, res) => {
     res.render('home', {name: 'Miles'});
 })
@@ -45,6 +52,26 @@ app.get('/jsonview', (req, res) => {
 app.get('/tryqs', (req, res) => {    
     res.json(req.query);
 })
+
+// :代表路由的變數名稱 ?為選擇性
+app.get("/routerpar/:action/:id?", (req, res) => {    
+    res.send(req.params);
+})
+
+// path以array處理，/xx或/yy都會以這規則處理
+app.get(['/xx', '/yy'], (req, res) => {    
+    res.send(req.url);
+})
+
+// path以正則表示處理  /^為開頭 $/為結尾 i為不區分大小寫 \/為跳脫/字符
+app.get(/^\/m\/09\d{8}$/i, (req, res) => {    
+    res.send(req.url);
+})
+
+//將router模組匯出當成middleware
+app.use(require('./routers/admin'));
+app.use('/admin2', require('./routers/admin2'));
+app.use('/admin3', require('./routers/admin3'));
 
 //要取得post內的內容，需要經過middleware來預處理
 app.post('/trypost', (req, res) => {    
