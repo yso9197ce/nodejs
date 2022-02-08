@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+<script>
+    const p1 = { name: 'peter', age:20 };
+    const p2 = { name: 'bill', age:27 };
+    const p3 = { name: 'david', age:18 };
+
+    const p1a = {...p1};
+    const p2a = {...p2};
+    const p3a = {...p3};
+
+    p1.next = p2;
+    p2.next = p3;
+    p3.next = p1;
+
+    p1a.next = p2a;
+    p2a.next = p3a;
+
+    console.log(p1);
+    try{
+        console.log(JSON.stringify(p1)); // 會發生結構循環的錯誤
+    } catch(ex){
+        console.log(ex);
+    }
+    console.log(JSON.stringify(p1a));
+
+    const p1b = JSON.parse(JSON.stringify(p1a)); // 深層複製
+    const p1_ = {...p1};
+
+    p1_.name = 'Flora';  //p1.name被改掉，但next仍指向原p2
+    console.log(p1_);
+
+</script>
+
+
+</body>
+</html>

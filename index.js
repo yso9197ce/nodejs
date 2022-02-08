@@ -3,12 +3,16 @@
 
 require('dotenv').config();
 const express = require('express');
+const session = require('express-session');
+const moment = require('moment-timezone');
 const multer = require('multer');
+const sqlStore = require('express-mysql-session')(session);
 const fs = require('fs').promises;
-//const upload = multer({dest: 'tmp-uploads/'});
+const db = require('./modules/connect-db');
 const upload = require(__dirname + '/modules/upload-imgs');
 const app = express();
 const port = process.env.PORT || 3001;
+const sessionStore = new sqlStore({}, db);
 
 //樣板引擎設定要放在router前面
 //預設樣板引擎的根目錄會是views
@@ -22,10 +26,27 @@ app.use(express.json());
 //靜態檔目錄要放router最前面
 app.use(express.static('public'));
 
+//設置session middleware
+//nodejs的session存放在記憶體，server重開session即消失
+app.use(session({
+    saveUninitialized: false,
+    resave: false,
+    secret: 'dfs02dsdsjlddf53sa546ljdlsjldjsal',
+    store: sessionStore,
+    cookie: {  //存放session ID用的cookie(名稱為:connect.sid)
+        maxAge: 1000 * 60 * 20   //若沒設時間，browser關掉session即消失
+    }
+}));
+
 //設定全站都會用到的middleware
 //req, res全站看到的都一樣
 app.use((req, res, next) => {
-    res.locals.milesID = "top";
+    res.locals.milesID = "top";    
+
+    //設定全站用的函式
+    res.locals.toDateString = time => moment(time).format('YYYY-MM-DD');
+    res.locals.toDataTimeString = time => moment(time).format('YYYY-MM-DD HH:mm:ss');
+
     next();
 })
 
@@ -68,10 +89,34 @@ app.get(/^\/m\/09\d{8}$/i, (req, res) => {
     res.send(req.url);
 })
 
+//需添加session middleware才能取得req.session
+app.get('/try-session', (req, res) => {    
+    req.session.myVar = req.session.myVar || 0;
+    req.session.myVar++;
+    res.json(req.session);
+})
+
+app.get('/try-moment', (req, res) => {  
+    const timeFormat = 'YYYY-MM-DD HH:mm:ss';
+    res.json({
+        now1: moment().format(timeFormat),   //moment()裡沒參數代表現在時間
+        now2: moment().tz('Asia/Tokyo').format(timeFormat),
+        express1: moment(req.session.cookie.expires).format(timeFormat),
+        express2: moment(req.session.cookie.expires).tz('Asia/Tokyo').format(timeFormat)
+    });
+})
+
+app.get('/try-db', async (req, res) => {    
+    const sql = 'SELECT * FROM member LIMIT 5';
+    const [result] = await db.query(sql);
+    res.json(result);
+})
+
 //將router模組匯出當成middleware
 app.use(require('./routers/admin'));
 app.use('/admin2', require('./routers/admin2'));
 app.use('/admin3', require('./routers/admin3'));
+app.use('/address-book', require('./routers/address-book'));
 
 //要取得post內的內容，需要經過middleware來預處理
 app.post('/trypost', (req, res) => {    
