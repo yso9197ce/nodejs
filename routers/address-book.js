@@ -10,15 +10,25 @@ async function getDataList(req, res){
         return res.redirect('/address-book/list');
     }
 
+    const conditions = {};
+    let search = req.query.search ? req.query.search.trim() : ''; 
+    //先在最前頭加WHERE 1(恆true)，後面接條件(如果有多個where條件)就只要接AND即可，不用判斷哪些條件是使用者沒輸入，而不知道WHERE要如何開始接
+    let sqlWhere = ' WHERE 1 ';  
+    if(search){
+        sqlWhere += ` AND \`name\` LIKE ${db.escape('%'+search+'%')} `;
+        conditions.search = search;
+    }
+
     const output = {
         perPage,
         page,
         totalRows: 0,
         totalPages: 0,
-        rows: []
+        rows: [],
+        conditions
     };
 
-    const t_sql = "SELECT COUNT(1) num FROM address_book";
+    const t_sql = `SELECT COUNT(1) num FROM address_book ${sqlWhere}`;
     const [rs1] = await db.query(t_sql);  //return [ { num: 24 } ]
     //console.log(rs1);
     const totalRows = rs1[0].num;
@@ -32,7 +42,7 @@ async function getDataList(req, res){
             return res.redirect(`/address-book/list?page=${output.totalPages}`);
         }
         
-        const sql = `SELECT * FROM address_book LIMIT ${perPage*(page-1)}, ${perPage} `;
+        const sql = `SELECT * FROM address_book ${sqlWhere} ORDER BY sid DESC LIMIT ${perPage*(page-1)}, ${perPage} `;
         const [rs2] = await db.query(sql);  //return [[{data},{data}],[{columndefine...},{columndefine...}]]
 
         //處理data的時間
@@ -52,6 +62,14 @@ router.get('/list', async (req, res)=>{
 
 router.get('/api/list', async (req, res)=>{
     res.json(await getDataList(req, res));
+});
+
+router.get('/add', (req, res)=>{
+    res.render('address-book/add');
+});
+
+router.post('/add', (req, res)=>{
+    res.render('address-book/add');
 });
 
 module.exports = router;                       

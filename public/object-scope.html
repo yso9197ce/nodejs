@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+<script>
+    const shape = {
+        attr1: 10,
+        meth1: function(){
+            console.log('meth1: this: ', this);
+            return this.attr1;
+        },
+        meth2: ()=> {
+            console.log('meth2: this: ', this);
+            return this.attr1*2;
+        },
+        meth3() {
+            console.log('meth3: this: ', this);
+            return this.attr1*3;
+        },
+        attr2: this.attr1,
+        attr3: this,
+
+        meth4: function(){
+            return (()=>{
+                console.log('meth4->()=>{}: this: ', this);
+                return this.attr1*4;
+            })();
+        },
+    }
+/*
+
+shape.attr1
+shape.meth1()
+shape.meth2()
+
+*/
+
+
+
+</script>
+
+</body>
+</html>

@@ -72,6 +72,14 @@
       </nav>
     </div>
     <div class="container">
+      <div class="row">
+        <div class="col">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination">
+            </ul>
+          </nav>
+        </div>
+      </div>
         <div class="row">
             <div class="col">
                 <table class="table table-striped">
@@ -96,7 +104,10 @@
     <script src="js/jquery-3.6.0.min.js"></script>
     <script src="bootstrap\js\bootstrap.js"></script>
     <script>
+        const pagenation = $('.pagination');
         const tbody = $('tbody');
+        let currentPage;
+
         const rowTemplate = o => {  
             return `<tr>
                         <td>${o.sid}</td>
@@ -106,13 +117,36 @@
                         <td>${o.address}</td>
                         <td>${o.mobile}</td>
                     </tr>`
-                };        
+                }; 
+                
+        const pageTemplate = p => {
+          let result = `<li class="page-item ${p == 1 ? 'disabled' : ''}">
+                          <a class="page-link" href="/list01.html?page=${p - 1}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                          </a>
+                        </li>`;
+
+          for(let i = p - 5; i <= p + 5; i++){
+            if(i < 1 || i > 5) continue;
+            result += `<li class="page-item ${i == p ? 'active' : ''}"><a class="page-link" href="/list01.html?page=${i}">${i}</a></li>`;
+          }
+
+          result += `<li class="page-item ${p == 5 ? 'disabled' : ''}">
+                      <a class="page-link" href="/list01.html?page=${p + 1}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                      </a>
+                    </li>`;
+
+          return result;       
+        }
         
         function getData(){
             fetch('/address-book/api/list' + location.search)
             .then(r => r.json())
             .then(obj => {
                 tbody.html(obj.rows.map(ele => rowTemplate(ele)));
+                currentPage = location.search ? +location.search.split('=')[1] : 1;
+                pagenation.html(pageTemplate(currentPage));
             });
         }
 

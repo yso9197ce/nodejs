@@ -26,6 +26,8 @@ app.use(express.json());
 //靜態檔目錄要放router最前面
 app.use(express.static('public'));
 
+app.use(express.static('node_modules/joi'));  //設成靜態檔位置，再用前端script引入
+
 //設置session middleware
 //nodejs的session存放在記憶體，server重開session即消失
 app.use(session({

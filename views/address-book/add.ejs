@@ -1,0 +1,54 @@
+<%- include('../parts/header') %>
+<%- include('../parts/navbar') %>
+
+<div class="container">
+  <div class="row">
+    <div class="col-lg-6">
+
+        <div class="card" >
+
+            <div class="card-body">
+              <h5 class="card-title">新增資料</h5>
+              <form name="form1" onsubmit="checkForm(); return false;">
+                <div class="mb-3">
+                  <label for="name" class="form-label">name</label>
+                  <input type="text" class="form-control" id="name" name="name">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">email</label>
+                    <input type="text" class="form-control" id="email" name="email">
+                  </div>
+                  <div class="mb-3">
+                    <label for="mobile" class="form-label">mobile</label>
+                    <input type="text" class="form-control" id="mobile" name="mobile">
+                  </div>
+                  <div class="mb-3">
+                    <label for="birthday" class="form-label">birthday</label>
+                    <input type="date" class="form-control" id="birthday" name="birthday">
+                  </div>
+                  <div class="mb-3">
+                    <label for="address" class="form-label">address</label>
+                    <input type="text" class="form-control" id="address" name="address">
+                  </div>               
+
+                <button type="submit" class="btn btn-primary">Submit</button>
+              </form>
+
+            </div>
+          </div>
+
+    </div>
+  </div>
+
+</div>
+
+<%- include('../parts/scripts') %>
+<script>
+    function checkForm(){
+        // 資料檢查
+
+
+
+    }
+</script>
+<%- include('../parts/footer') %>

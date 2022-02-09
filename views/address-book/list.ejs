@@ -1,7 +1,28 @@
 <%- include('../parts/header') %>
 <%- include('../parts/navbar') %>
 
-<div class="container">    
+<div class="container"> 
+    <div class="row">
+        <div class="col">
+            <nav aria-label="Page navigation example">
+                <ul class="pagination">
+                  <li class="page-item <%= page === 1 ? 'disabled' : ''%>">
+                    <a class="page-link" href="?<%- new URLSearchParams({...conditions, page: page-1}) %>" aria-label="Previous">
+                      <span aria-hidden="true">&laquo;</span>
+                    </a>
+                  </li>
+                  <% for(let i = 1; i <= totalPages; i++){ %>
+                    <li class="page-item <%= i === page ? 'active' : ''%>"><a class="page-link" href="?<%- new URLSearchParams({...conditions, page: i}) %>"><%=i%></a></li>
+                  <% } %>
+                  <li class="page-item <%= page === totalPages ? 'disabled' : ''%>">
+                    <a class="page-link" href="?<%- new URLSearchParams({...conditions, page: page+1}) %>" aria-label="Next">
+                      <span aria-hidden="true">&raquo;</span>
+                    </a>
+                  </li>
+                </ul>
+              </nav>
+        </div>
+    </div>   
     <div class="row">
         <div class="col">
             <table class="table table-striped">
