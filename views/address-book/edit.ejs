@@ -62,7 +62,8 @@
           if(!r.success){
               alert('資料沒有修改');
           }else{
-              location.href = '/address-book/list';
+            console.log(r.page)
+              location.href = `/address-book/list?page=${r.page}`;
           }
         })
     }

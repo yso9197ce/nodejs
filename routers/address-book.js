@@ -118,11 +118,12 @@ router.get('/edit/:sid/:page', async (req, res) => {
     res.render('address-book/edit', result[0]);
 })
 
-router.post('/edit/:sid', async (req, res) => {
+router.post('/edit/:sid/:page?', async (req, res) => {
     const output = {
         success: false,
         error: "",
         result: {},
+        page:''
     }
 
     const sql = "UPDATE address_book SET ? WHERE sid=?";
@@ -130,7 +131,7 @@ router.post('/edit/:sid', async (req, res) => {
 
     output.success = !!result.changedRows;
     output.result = result;
-
+    output.page = req.params.page
     res.json(output);
 })
 
