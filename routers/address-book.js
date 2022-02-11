@@ -1,5 +1,6 @@
 const express = require('express');
 const db = require('./../modules/connect-db');
+const upload = require('./../modules/upload-imgs');
 
 const router = express.Router();
 
@@ -51,12 +52,13 @@ async function getDataList(req, res){
         })
 
         output.rows = rs2;
+       
     }
 
     return output;
 }
 
-router.get('/list', async (req, res)=>{
+router.get('/list', async (req, res)=>{    
     res.render('address-book/list', await getDataList(req, res));
 });
 
@@ -68,8 +70,68 @@ router.get('/add', (req, res)=>{
     res.render('address-book/add');
 });
 
-router.post('/add', (req, res)=>{
-    res.render('address-book/add');
+//如果前端post是用new FormData()傳資料，預設content-type為multipart/form-data，必須用multer解析body
+//如果用multer解析body但沒有要上傳檔案，可使用upload.none()
+router.post('/add', upload.none(), async (req, res)=>{
+    const output = {
+        success: false,
+        error: "",
+        result: {},
+    }
+
+    // const sql = 'INSERT INTO address_book SET ?';
+    // const insertObj = {...req.body, created_at: new Date};
+    // const [result] = await db.query(sql, [insertObj]);
+
+    const sql = "INSERT INTO `address_book`(`name`, `email`, `mobile`, `birthday`, `address`, `created_at`) VALUES (?, ?, ?, ?, ?, NOW())";
+    const [result] = await db.query(sql, [
+        req.body.name,
+        req.body.email,
+        req.body.mobile,
+        req.body.birthday,
+        req.body.address,
+    ]);
+    console.log(result);
+    
+    output.success = !!result.affectedRows;  //以affectedRows(影響的資料列)來看是否成功
+    output.result = result;
+
+    res.json(output);
 });
+
+router.get('/delete/:sid', async (req, res) => {
+    const sql = "DELETE FROM `address_book` WHERE sid=?";
+    const [result] = await db.query(sql, [req.params.sid]);
+
+    res.redirect('/address-book/list');
+})
+
+router.get('/edit/:sid/:page', async (req, res) => {
+    //req.get('Referer');  //可從requset header取得Referer值
+    const sql = "SELECT * FROM address_book WHERE sid=?";
+    const [result] = await db.query(sql, [req.params.sid]);
+    
+    if(!result.length){
+        res.redirect('/address-book/list');        
+    }
+    
+    res.render('address-book/edit', result[0]);
+})
+
+router.post('/edit/:sid', async (req, res) => {
+    const output = {
+        success: false,
+        error: "",
+        result: {},
+    }
+
+    const sql = "UPDATE address_book SET ? WHERE sid=?";
+    const [result] = await db.query(sql, [req.body, req.params.sid]);
+
+    output.success = !!result.changedRows;
+    output.result = result;
+
+    res.json(output);
+})
 
 module.exports = router;                       

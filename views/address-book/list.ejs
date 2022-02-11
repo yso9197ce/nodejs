@@ -28,23 +28,27 @@
             <table class="table table-striped">
                 <thead>
                     <tr>
+                        <th scope="col"><i class="fas fa-trash"></i></th>
                         <th scope="col">#</th>
                         <th scope="col">姓名</th>
                         <th scope="col">生日</th>
                         <th scope="col">EMAIL</th>
                         <th scope="col">地址</th>
                         <th scope="col">手機</th>
+                        <th scope="col"><i class="fas fa-pen"></i></th>
                     </tr>
                 </thead>
                 <tbody>
                     <% for(let i of rows){ %>
                     <tr>
+                        <td><a href="/address-book/delete/<%= i.sid %>" onclick="return confirm('確定刪除<%= i.sid %>的資料嗎?')"><i class="fas fa-trash"></i></a></td>
                         <td><%= i.sid %></td>
                         <td><%= i.name %></td>
                         <td><%= i.birthday %></td>
                         <td><%= i.email %></td>
                         <td><%= i.address %></td>
                         <td><%= i.mobile %></td>
+                        <td><a href="/address-book/edit/<%= i.sid %>"><i class="fas fa-pen"></i></a></td>
                     </tr>
                     <% } %>                
                 </tbody>          

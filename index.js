@@ -13,6 +13,10 @@ const upload = require(__dirname + '/modules/upload-imgs');
 const app = express();
 const port = process.env.PORT || 3001;
 const sessionStore = new sqlStore({}, db);
+const cors = require('cors');
+const bcrypt = require('bcryptjs');
+const fetch = require('node-fetch');
+const axios = require('axios');
 
 //樣板引擎設定要放在router前面
 //預設樣板引擎的根目錄會是views
@@ -27,6 +31,7 @@ app.use(express.json());
 app.use(express.static('public'));
 
 app.use(express.static('node_modules/joi'));  //設成靜態檔位置，再用前端script引入
+app.use(cors({credentials: true, origin: function(origin, cb){cb(null, true)}}));  //設定cors
 
 //設置session middleware
 //nodejs的session存放在記憶體，server重開session即消失
@@ -36,7 +41,8 @@ app.use(session({
     secret: 'dfs02dsdsjlddf53sa546ljdlsjldjsal',
     store: sessionStore,
     cookie: {  //存放session ID用的cookie(名稱為:connect.sid)
-        maxAge: 1000 * 60 * 20   //若沒設時間，browser關掉session即消失
+        maxAge: 1000 * 60 * 20,   //若沒設時間，browser關掉session即消失
+        domain: '127.0.0.1'
     }
 }));
 
@@ -156,6 +162,19 @@ app.post('/try-uploads', upload.array('photos'), async(req, res) => {
     //     }
     // });
     res.json(result);
+})
+
+app.get('/yahoo', (req, res) => {
+    fetch('https://tw.yahoo.com/')
+        .then(r=>r.text())
+        .then(txt=>{
+            res.send(txt);
+        }); 
+    })
+
+app.get('/yahoo2', async (req, res) => {
+    const response = await axios.get('https://tw.yahoo.com');
+    res.send(response.data)
 })
 
 //錯誤頁面要放在所有router最後面

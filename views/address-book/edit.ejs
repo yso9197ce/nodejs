@@ -8,27 +8,27 @@
         <div class="card" >
 
             <div class="card-body">
-              <h5 class="card-title">新增資料</h5>
+              <h5 class="card-title">編輯資料</h5>
               <form name="form1" onsubmit="checkForm(); return false;">
                 <div class="mb-3">
                   <label for="name" class="form-label">name</label>
-                  <input type="text" class="form-control" id="name" name="name">
+                  <input type="text" class="form-control" id="name" name="name" value="<%= name %>">
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">email</label>
-                    <input type="text" class="form-control" id="email" name="email">
+                    <input type="text" class="form-control" id="email" name="email" value="<%= email %>">
                   </div>
                   <div class="mb-3">
                     <label for="mobile" class="form-label">mobile</label>
-                    <input type="text" class="form-control" id="mobile" name="mobile">
+                    <input type="text" class="form-control" id="mobile" name="mobile" value="<%= mobile %>">
                   </div>
                   <div class="mb-3">
                     <label for="birthday" class="form-label">birthday</label>
-                    <input type="date" class="form-control" id="birthday" name="birthday">
+                    <input type="date" class="form-control" id="birthday" name="birthday" value="<%= toDateString(birthday) %>">
                   </div>
                   <div class="mb-3">
                     <label for="address" class="form-label">address</label>
-                    <input type="text" class="form-control" id="address" name="address">
+                    <input type="text" class="form-control" id="address" name="address" value="<%= address %>">
                   </div>               
 
                 <button type="submit" class="btn btn-primary">Submit</button>
@@ -45,14 +45,25 @@
 <%- include('../parts/scripts') %>
 <script>
     function checkForm(){
-        const fd = new FormData(form1);
-        //const upr = new URLSearchParams(fd);
-        
+        const fd = new FormData(form1);        
+         
+        const dataObj = {};
+        for(let i of fd){
+            dataObj[i[0]] = i[1];
+        }  
+
         fetch('', {
           method: 'POST',
-          body: fd,
+          body: JSON.stringify(dataObj),
+          headers: {
+            'Content-Type': 'application/json'
+        }
         }).then(r => r.json()).then(r => {
-          console.log(r);
+          if(!r.success){
+              alert('資料沒有修改');
+          }else{
+              location.href = '/address-book/list';
+          }
         })
     }
     
